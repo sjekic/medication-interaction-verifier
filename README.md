@@ -1,2 +1,4 @@
 # medication-interaction-verifier
-Software Development and DevOps Individual Project
+Software Development and DevOps Individual Project done by Simonida Jekic.
+
+As I am very passionate for healthcare and want to build a career in the pharmaceutical industry, I decided to make my project related to it. It is a simple web application that allows users to input two medications and see the potential side effects/contraindications for the interaction between them. The database was built using SQLite and filled in manually using data from a verified online resource. The frontend is built using html and the backend is built using python. The functionalities of the app include CRUD operations like adding missing drug interactions or seeing the existing ones in the database using FastAPI. All of the searches done by the user are saved into a JSON file. 
