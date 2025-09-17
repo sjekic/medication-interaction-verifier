@@ -33,5 +33,201 @@
     "found": true,
     "severity": "major",
     "ts": "2025-09-15T15:13:24Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-17T16:34:51Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-17T16:35:01Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-17T16:39:06Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-17T16:40:17Z"
+  },
+  {
+    "drug_a": "aerius",
+    "drug_b": "ibuprofen",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T16:40:33Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-17T16:42:53Z"
+  },
+  {
+    "drug_a": "ibuprofen",
+    "drug_b": "paracetamol",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T16:43:00Z"
+  },
+  {
+    "drug_a": "acetaminophen",
+    "drug_b": "ibuprofen",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T16:43:07Z"
+  },
+  {
+    "drug_a": "ibuprofen",
+    "drug_b": "penicilin",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T16:43:12Z"
+  },
+  {
+    "drug_a": "ibuprofen",
+    "drug_b": "prednisone",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T16:43:17Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "prednisone",
+    "found": true,
+    "severity": "moderate",
+    "ts": "2025-09-17T16:43:23Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-17T18:06:46Z"
+  },
+  {
+    "drug_a": "aerius",
+    "drug_b": "ibuprofen",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T18:06:50Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-17T18:07:42Z"
+  },
+  {
+    "drug_a": "aerius",
+    "drug_b": "ibuprofen",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T18:07:52Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-17T18:12:27Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "prednisone",
+    "found": true,
+    "severity": "moderate",
+    "ts": "2025-09-17T18:12:38Z"
+  },
+  {
+    "drug_a": "ibuprofen",
+    "drug_b": "prednisone",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T18:12:45Z"
+  },
+  {
+    "drug_a": "aerius",
+    "drug_b": "ibuprofen",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T18:14:14Z"
+  },
+  {
+    "drug_a": "aerius",
+    "drug_b": "ibuprofen",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T18:19:37Z"
+  },
+  {
+    "drug_a": "aerius",
+    "drug_b": "aspirin",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T18:20:36Z"
+  },
+  {
+    "drug_a": "aerius",
+    "drug_b": "ibuprofen",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T18:24:15Z"
+  },
+  {
+    "drug_a": "aerius",
+    "drug_b": "ibuprofen",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T18:25:40Z"
+  },
+  {
+    "drug_a": "drug1",
+    "drug_b": "drug2",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T18:27:31Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-17T20:06:40Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "prednisone",
+    "found": true,
+    "severity": "moderate",
+    "ts": "2025-09-17T20:06:46Z"
+  },
+  {
+    "drug_a": "amlodipine",
+    "drug_b": "benadryl",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-17T20:06:59Z"
+  },
+  {
+    "drug_a": "amlodipine",
+    "drug_b": "benadryl",
+    "found": true,
+    "severity": "moderate",
+    "ts": "2025-09-17T20:07:23Z"
   }
 ]

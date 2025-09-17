@@ -1,13 +1,30 @@
-# app/main.py
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from pathlib import Path
 import sqlite3, json, time
 
 app = FastAPI(title="Drug Interaction Verifier")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500"
+    ],   # addresses your VS Code Live Server uses
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 DB_PATH = "app.db"
 HISTORY_PATH = Path(__file__).resolve().parents[1] / "data" / "history.json"
+
+
+# The following part of the code defines a class called CheckReq which is a subclass of BaseModel which comes from python's
+# pydantic library which is used for data validation. This means that the data the user inputs into the FastAPI
+# will be checked to make sure it has the same datatype as the class attributes. So if the user inputs a non-string
+# value an error will appear.
 
 class CheckReq(BaseModel):
     drug_a: str = Field(..., example="Ibuprofen")
@@ -20,6 +37,10 @@ class CheckResp(BaseModel):
     message: str | None = None
     suggest_add: bool | None = None
     how_to_add: dict | None = None 
+
+#The fastAPI consists of the request and response, here the request is asking for 2 medications and the response
+# follows a structure that depends on whether the interaction was found or not (but that is always included, while the rest
+# like severity, description etc are optional and depend on the situation)
 
 class RuleIn(BaseModel):
     id: str | None = None  

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Medication Interaction Verifier</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+:root{ --bg:#3e787b; --panel:#2d5f61; --text:#fff; --muted:#e4e0dd; }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{ margin:0; font-family:'Montserrat', sans-serif; background:var(--bg); color:var(--text); display:flex; justify-content:center; align-items:center; }
+.wrap{ text-align:center; width:min(920px,92vw); }
+h1{ margin:0 0 16px; font-weight:700; }
+p.lead{ margin:0 auto 24px; line-height:1.6; max-width:720px; }
+
+.inputs{ display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-bottom:14px; }
+.field{ display:flex; flex-direction:column; align-items:flex-start; }
+label{ font-size:14px; margin-bottom:8px; color:#eef4f3; font-weight:600; }
+.input{ padding:12px 16px; border-radius:25px; border:none; outline:none; font-size:14px; width:260px; background:var(--muted); color:#333; font-family:'Montserrat', sans-serif; }
+
+.actions{ display:flex; justify-content:center; margin-top:10px; }
+.btn{ padding:12px 40px; border-radius:25px; border:none; background:var(--panel); color:#fff; font-size:16px; cursor:pointer; transition:filter .2s ease; font-family:'Montserrat', sans-serif; font-weight:600; }
+.btn:hover{ filter:brightness(1.05); }
+
+.result{ margin-top:20px; font-family:'Montserrat', sans-serif; }
+.alert{ display:inline-block; padding:10px 14px; border-radius:12px; }
+.ok{ background:rgba(76,175,80,.2); border:1px solid rgba(76,175,80,.35); }
+.warn{ background:rgba(244,67,54,.2); border:1px solid rgba(244,67,54,.35); }
+.info{ background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3); }
+.small{ display:block; opacity:.9; margin-top:8px; font-family:'Montserrat', sans-serif; }
+
+.hidden{ display:none; }
+textarea{ resize:vertical; min-height:80px; }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Medication Interaction Verifier</h1>
+    <p class="lead">Welcome, please input the names of 2 medications you would like to know if they have any interactions that could cause side effects or contraindications.</p>
+
+    <form id="form" autocomplete="off" novalidate>
+      <div class="inputs">
+        <div class="field">
+          <label for="drugA">First medication</label>
+          <input id="drugA" class="input" name="drug_a" placeholder="Input a drug name…" required />
+        </div>
+        <div class="field">
+          <label for="drugB">Second medication</label>
+          <input id="drugB" class="input" name="drug_b" placeholder="Input a drug name…" required />
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="submit" type="submit">Check</button>
+      </div>
+    </form>
+
+    <div class="result" id="result" aria-live="polite"></div>
+
+    <!-- Add interaction form (hidden by default) -->
+    <form id="addForm" class="hidden" style="margin-top:20px;">
+      <p style="margin-bottom:12px;">Would you like to add this interaction to the database?</p>
+      <div class="inputs">
+        <div class="field">
+          <label for="sev">Severity</label>
+          <select id="sev" class="input">
+            <option value="minor">minor</option>
+            <option value="moderate">moderate</option>
+            <option value="major">major</option>
+            <option value="contraindicated">contraindicated</option>
+          </select>
+        </div>
+      </div>
+    <div class="field" style="margin:14px auto; max-width:540px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+      <label for="desc">Description</label>
+      <textarea id="desc" class="input" placeholder="Describe the interaction…" required style="width:260px;"></textarea>
+    </div>
+
+      <div class="actions">
+        <button type="submit" class="btn">Add Interaction</button>
+      </div>
+      <div class="result" id="addResult"></div>
+    </form>
+
+    <small class="small">Tip: examples — Ibuprofen + Aspirin</small>
+  </main>
+
+  <script>
+    const API_BASE = "http://localhost:8000";
+    const API_CHECK = API_BASE + "/check";
+
+    const form = document.getElementById('form');
+    const result = document.getElementById('result');
+    const submit = document.getElementById('submit');
+    const addForm = document.getElementById('addForm');
+    const addResult = document.getElementById('addResult');
+
+    let lastA = null;
+    let lastB = null;
+
+    function showMessage(html){ result.innerHTML = html; }
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      addForm.classList.add('hidden');
+      const drug_a = document.getElementById('drugA').value.trim();
+      const drug_b = document.getElementById('drugB').value.trim();
+      if(!drug_a || !drug_b){ showMessage(`<span>Please fill both drug names.</span>`); return; }
+      submit.disabled = true; showMessage(`<span>Checking interactions…</span>`);
+      try{
+        const resp = await fetch(API_CHECK, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({drug_a, drug_b}) });
+        if(!resp.ok){ throw new Error(await resp.text() || `HTTP ${resp.status}`); }
+        const data = await resp.json();
+        if(data.found){
+          const sev = data.severity ? `Severity: ${data.severity}.` : '';
+          const desc = data.description ? ` ${data.description}` : '';
+          showMessage(`<strong>Interaction found.</strong> ${sev}<br>${desc}`);
+        } else {
+          const msg = data.message || 'No interactions found for the selected pair.';
+          showMessage(`<span>${msg}</span>`);
+          if(data.suggest_add){
+            // Save last checked pair for add form
+            lastA = drug_a;
+            lastB = drug_b;
+            addForm.classList.remove('hidden');
+          }
+        }
+      }catch(err){
+        console.error(err);
+        showMessage(`<span>Could not check interactions. ${err.message}</span>`);
+      }finally{
+        submit.disabled = false;
+      }
+    });
+
+    addForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      addResult.innerHTML = `<span>Adding…</span>`;
+      try{
+        const severity = document.getElementById('sev').value;
+        const description = document.getElementById('desc').value;
+        const resp = await fetch(API_BASE+"/rules", {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ a:lastA, b:lastB, severity, description })
+        });
+        if(!resp.ok){ throw new Error(await resp.text() || `HTTP ${resp.status}`); }
+        addResult.innerHTML = `<span class='ok'>Interaction added successfully.</span>`;
+        addForm.reset();
+        addForm.classList.add('hidden');
+      } catch(err){
+        addResult.innerHTML = `<span class='warn'>${err.message}</span>`;
+      }
+    });
+  </script>
+</body>
+</html>
