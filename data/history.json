@@ -229,5 +229,89 @@
     "found": true,
     "severity": "moderate",
     "ts": "2025-09-17T20:07:23Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-18T15:52:24Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-18T15:59:18Z"
+  },
+  {
+    "drug_a": "ibuprofen",
+    "drug_b": "prednisone",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-18T15:59:48Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "prednisone",
+    "found": true,
+    "severity": "moderate",
+    "ts": "2025-09-18T15:59:59Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-09-18T16:09:48Z"
+  },
+  {
+    "drug_a": "ibuprofen",
+    "drug_b": "prednisone",
+    "found": false,
+    "severity": null,
+    "ts": "2025-09-18T16:10:02Z"
+  },
+  {
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-10-03T13:08:22Z"
+  },
+  {
+    "drug_a": "voltaren",
+    "drug_b": "warfarin",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-10-03T15:06:49Z"
+  },
+  {
+    "drug_a": "voltaren",
+    "drug_b": "warfarin",
+    "found": true,
+    "severity": "major",
+    "ts": "2025-10-03T15:07:04Z"
+  },
+  {
+    "drug_a": "voltaren",
+    "drug_b": "warfari",
+    "found": false,
+    "severity": null,
+    "ts": "2025-10-03T15:07:06Z"
+  },
+  {
+    "drug_a": "tylenol",
+    "drug_b": "warfarin",
+    "found": false,
+    "severity": null,
+    "ts": "2025-10-03T15:08:59Z"
+  },
+  {
+    "drug_a": "tylenol",
+    "drug_b": "warfarin",
+    "found": true,
+    "severity": "moderate",
+    "ts": "2025-10-03T15:09:06Z"
   }
 ]

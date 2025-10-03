@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>History • Medication Interaction Verifier</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#3e787b; --panel:#2d5f61; --text:#fff; }
+*{box-sizing:border-box} html,body{height:100%}
+body{ margin:0; font-family:'Montserrat', sans-serif; background:var(--bg); color:var(--text); }
+.wrap{ max-width:900px; margin:80px auto 40px; padding:0 20px; }
+.btn{ padding:10px 16px; border-radius:25px; border:none; background:var(--panel); color:#fff; cursor:pointer; font-weight:600; text-decoration:none; }
+.card{ background:rgba(255,255,255,.08); border-radius:16px; padding:12px 16px; margin:10px 0; display:flex; justify-content:space-between; align-items:center; }
+.badge{ padding:4px 10px; border-radius:12px; }
+.ok{ background:rgba(76,175,80,.2); border:1px solid rgba(76,175,80,.35); }
+.warn{ background:rgba(244,67,54,.2); border:1px solid rgba(244,67,54,.35); }
+nav{ position:fixed;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:12px; }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="btn" style="text-decoration:none;padding:8px 14px;">Home</a>
+    <a href="rules.html" class="btn" style="text-decoration:none;padding:8px 14px;">Rules</a>
+    <a href="history.html" class="btn" style="text-decoration:none;padding:8px 14px;">History</a>
+    <a href="pharmacies.html" class="btn" style="text-decoration:none;padding:8px 14px;">Pharmacies</a>
+  </nav>
+
+  <main class="wrap">
+    <h1>History</h1>
+    <div style="margin:12px 0;">
+      <button id="btnReload" class="btn">Reload</button>
+    </div>
+    <div id="list">Loading…</div>
+  </main>
+
+<script>
+const API_BASE = "http://localhost:8000";
+const API_HISTORY = API_BASE + "/history";
+
+async function loadHistory(){
+  const list = document.getElementById('list');
+  list.innerHTML = "Loading…";
+  try{
+    const r = await fetch(API_HISTORY);
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const hist = await r.json();
+    if(!hist.length){ list.innerHTML = "<div class='badge ok'>No checks yet.</div>"; return; }
+    // latest first
+    const items = hist.slice().reverse().map(h=>`
+      <div class="card">
+        <div>
+          <strong>${h.drug_a}</strong> + <strong>${h.drug_b}</strong>
+          ${h.found ? `<span class="badge ok">found${h.severity?` (${h.severity})`:''}</span>`
+                     : `<span class="badge warn">not found</span>`}
+        </div>
+        <small style="opacity:.85">${h.ts}</small>
+      </div>
+    `).join("");
+    list.innerHTML = items;
+  }catch(e){
+    list.innerHTML = `<div class="badge warn">Failed to load: ${e.message}</div>`;
+  }
+}
+
+document.getElementById('btnReload').addEventListener('click', loadHistory);
+loadHistory();
+</script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rules • Medication Interaction Verifier</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#3e787b; --panel:#2d5f61; --text:#fff; --muted:#e4e0dd; }
+*{box-sizing:border-box} html,body{height:100%}
+body{ margin:0; font-family:'Montserrat', sans-serif; background:var(--bg); color:var(--text); }
+.wrap{ max-width:1100px; margin:80px auto 40px; padding:0 20px; }
+.btn{ padding:10px 16px; border-radius:25px; border:none; background:var(--panel); color:#fff; cursor:pointer; font-weight:600; }
+.input{ padding:10px 12px; border-radius:12px; border:none; background:var(--muted); color:#333; }
+.table{ width:100%; border-collapse:separate; border-spacing:0 8px; }
+th,td{ text-align:left; padding:10px; background:rgba(255,255,255,.08); border-radius:10px; }
+.alert{ display:inline-block; padding:8px 12px; border-radius:12px; }
+.ok{ background:rgba(76,175,80,.2); border:1px solid rgba(76,175,80,.35); }
+.warn{ background:rgba(244,67,54,.2); border:1px solid rgba(244,67,54,.35); }
+nav{ position:fixed;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:12px; }
+nav a{ text-decoration:none }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="btn">Home</a>
+    <a href="rules.html" class="btn">Rules</a>
+    <a href="history.html" class="btn">History</a>
+    <a href="pharmacies.html" class="btn" style="text-decoration:none;padding:8px 14px;">Pharmacies</a>
+  </nav>
+
+  <main class="wrap">
+    <h1>Rules</h1>
+
+    <div style="margin:12px 0; display:flex; gap:8px; flex-wrap:wrap;">
+      <button id="btnLoad" class="btn">Load Rules</button>
+      <button id="btnNew" class="btn">Add New Rule</button>
+    </div>
+
+    <div id="container"></div>
+  </main>
+
+<script>
+const API_BASE = "http://localhost:8000";
+const API_RULES = API_BASE + "/rules";
+
+// Load list
+async function loadRules(){
+  const el = document.getElementById('container');
+  el.innerHTML = "Loading…";
+  try{
+    const r = await fetch(API_RULES);
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    if(!data.length){ el.innerHTML = "<div class='alert ok'>No rules yet.</div>"; return; }
+    el.innerHTML = renderTable(data);
+    attachHandlers();
+  }catch(e){
+    el.innerHTML = `<div class="alert warn">Failed to load: ${e.message}</div>`;
+  }
+}
+
+function renderTable(rows){
+  return `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th><th>A</th><th>B</th><th>Severity</th><th>Description</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(r=>`
+          <tr data-id="${r.id}">
+            <td><code>${r.id}</code></td>
+            <td>${r.a}</td>
+            <td>${r.b}</td>
+            <td>
+              <select class="input sev">
+                ${["minor","moderate","major","contraindicated"].map(o=>`<option value="${o}" ${o===r.severity?"selected":""}>${o}</option>`).join("")}
+              </select>
+            </td>
+            <td><textarea class="input desc" style="min-width:320px;min-height:52px;">${r.description||""}</textarea></td>
+            <td>
+              <button class="btn save">Save</button>
+              <button class="btn del" style="margin-left:6px;">Delete</button>
+            </td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function attachHandlers(){
+  document.querySelectorAll('.save').forEach(b=>{
+    b.addEventListener('click', async (e)=>{
+      const tr = e.target.closest('tr');
+      const id = tr.dataset.id;
+      const severity = tr.querySelector('.sev').value;
+      const description = tr.querySelector('.desc').value;
+
+      // Backend expects query params for PUT (unless you changed it to accept JSON)
+      const url = `${API_RULES}/${encodeURIComponent(id)}?severity=${encodeURIComponent(severity)}&description=${encodeURIComponent(description)}`;
+      b.disabled = true; b.textContent = "Saving…";
+      try{
+        const r = await fetch(url, { method: 'PUT' });
+        if(!r.ok) throw new Error(await r.text() || `HTTP ${r.status}`);
+        b.textContent = "Saved ✓";
+        setTimeout(()=>{ b.textContent="Save"; b.disabled=false; }, 700);
+      }catch(err){
+        alert("Update failed: " + err.message);
+        b.textContent="Save"; b.disabled=false;
+      }
+    });
+  });
+
+  document.querySelectorAll('.del').forEach(b=>{
+    b.addEventListener('click', async (e)=>{
+      const tr = e.target.closest('tr');
+      const id = tr.dataset.id;
+      if(!confirm(`Delete rule ${id}?`)) return;
+      b.disabled = true; b.textContent = "Deleting…";
+      try{
+        const r = await fetch(`${API_RULES}/${encodeURIComponent(id)}`, { method:'DELETE' });
+        if(!r.ok) throw new Error(await r.text() || `HTTP ${r.status}`);
+        tr.remove();
+      }catch(err){
+        alert("Delete failed: " + err.message);
+        b.textContent="Delete"; b.disabled=false;
+      }
+    });
+  });
+}
+
+// Add new rule (quick modal-less prompt flow)
+document.getElementById('btnNew').addEventListener('click', async ()=>{
+  const a = prompt("Drug A:");
+  if(!a) return;
+  const b = prompt("Drug B:");
+  if(!b) return;
+  const severity = prompt("Severity (minor|moderate|major|contraindicated):","moderate");
+  if(!severity) return;
+  const description = prompt("Description:","");
+  try{
+    const r = await fetch(API_RULES, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ a, b, severity, description })
+    });
+    if(!r.ok) throw new Error(await r.text() || `HTTP ${r.status}`);
+    await loadRules();
+  }catch(err){
+    alert("Create failed: " + err.message);
+  }
+});
+
+document.getElementById('btnLoad').addEventListener('click', loadRules);
+
+// Auto-load on visit
+loadRules();
+</script>
+</body>
+</html>

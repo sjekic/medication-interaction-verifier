@@ -10,7 +10,7 @@ app.add_middleware(
     allow_origins=[
         "http://127.0.0.1:5500",
         "http://localhost:5500"
-    ],   # addresses your VS Code Live Server uses
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
