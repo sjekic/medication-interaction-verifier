@@ -8,9 +8,9 @@ git clone https://github.com/<your-username>/medication-interaction-verifier.git
 cd medication-interaction-verifier
 
 python -m venv venv
-# Windows:
+Windows:
 venv\Scripts\activate
-# macOS/Linux:
+macOS/Linux:
 source venv/bin/activate
 
 When activating the virtual environment, an error might occur on Windows Powershell that says that running scripts is disabled on this system. In this case run the following command: Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
