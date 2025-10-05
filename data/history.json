@@ -313,5 +313,33 @@
     "found": true,
     "severity": "moderate",
     "ts": "2025-10-03T15:09:06Z"
+  },
+  {
+    "drug_a": "lexapro",
+    "drug_b": "zoloft",
+    "found": false,
+    "severity": null,
+    "ts": "2025-10-03T15:27:23Z"
+  },
+  {
+    "drug_a": "lorazepam",
+    "drug_b": "zoloft",
+    "found": false,
+    "severity": null,
+    "ts": "2025-10-03T15:27:27Z"
+  },
+  {
+    "drug_a": "lorazepam",
+    "drug_b": "zoloft",
+    "found": false,
+    "severity": null,
+    "ts": "2025-10-03T15:27:42Z"
+  },
+  {
+    "drug_a": "lorazepam",
+    "drug_b": "zoloft",
+    "found": true,
+    "severity": "moderate",
+    "ts": "2025-10-03T15:27:51Z"
   }
 ]

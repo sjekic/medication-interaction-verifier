@@ -5,6 +5,9 @@ DB_PATH = "app.db"
 conn = sqlite3.connect(DB_PATH)
 cur = conn.cursor()
 
+#We first create a table if it does not exist already, its schema consists of an id, medications a and b which are strings
+# and the severity and description of the interaction between the two medications which are also strings
+
 cur.execute("""
 CREATE TABLE IF NOT EXISTS rules (
     id TEXT PRIMARY KEY,
@@ -15,13 +18,19 @@ CREATE TABLE IF NOT EXISTS rules (
 );
 """)
 
+#In the following code we create a unique index on the pair of medications in a way that is independent of their order
+
 cur.execute("""
 CREATE UNIQUE INDEX IF NOT EXISTS ux_rules_pair
-ON rules (
+ON rules(
     CASE WHEN a < b THEN a ELSE b END,
     CASE WHEN a < b THEN b ELSE a END
 );
 """)
+
+#We need to ensure that the pairs of medications will be trimmed and all in lowercase, and in alphabetical order
+# so we don't have duplicates like ibuprofen_aspirin and aspirin_ibuprofen
+
 
 def canon(a: str, b: str):
     a = a.strip().lower()
@@ -42,8 +51,10 @@ seed_rules = [
     ("insulin_lexapro", "insulin", "lexapro", "moderate", "Using escitalopram (Lexapro) together with insulin or certain other diabetes medications may increase the risk of hypoglycemia, or low blood sugar. Symptoms of hypoglycemia include headache, dizziness, drowsiness, nervousness, confusion, tremor, nausea, hunger, weakness, perspiration, palpitation, and rapid heartbeat. Talk to your doctor if you have any questions or concerns. You may need a dose adjustment or more frequent monitoring of your blood sugar to safely use both medications. It is important to tell your doctor about all other medications you use, including vitamins and herbs. Do not stop using any medications without first talking to your doctor."),
     ("tylenol_warfarin", "tylenol", "warfarin", "moderate", "Using acetaminophen together with warfarin is generally considered safe. However, the risk for bleeding may increase if higher dosages of acetaminophen (more than 1300 mg/day) are used for more than a few days at a time, especially in individuals who are elderly, consume alcohol regularly, or have poor nutrition. Talk to your doctor if you have any questions or concerns. Your doctor may be able to prescribe alternatives that do not interact, or you may need a dose adjustment or more frequent monitoring of your INR to safely use both medications. Many over-the-counter and prescription drug products used for the treatment of cough and cold, flu, pain, fever, arthritis, or headache may contain acetaminophen. To avoid inadvertently taking too much acetaminophen, you should check the ingredients of all the medications you take or intend to take. Consult a healthcare professional if you are not sure if a drug product contains acetaminophen, or if you need help figuring out what products are safe for you to use. You should seek immediate medical attention if you experience any unusual bleeding or bruising, or have other signs and symptoms of bleeding such as dizziness; lightheadedness; red or black, tarry stools; coughing up or vomiting fresh or dried blood that looks like coffee grounds; severe headache; and weakness. It is important to tell your doctor about all other medications you use, including vitamins and herbs. Do not stop using any medications without first talking to your doctor."),
     ("voltaren_warfarin", "voltaren", "warfarin", "major", "Using warfarin together with diclofenac may increase the risk of serious bleeding complications, especially in the gastrointestinal tract. Talk to your doctor if you have any questions or concerns. Your doctor may be able to prescribe alternatives that do not interact, or you may need a dose adjustment or more frequent monitoring of your INR to safely use both medications. You should seek immediate medical attention if you experience any unusual bleeding or bruising, or have other signs and symptoms of bleeding such as dizziness; lightheadedness; red or black, tarry stools; coughing up or vomiting fresh or dried blood that looks like coffee grounds; severe headache; and weakness. It is important to tell your doctor about all other medications you use, including vitamins and herbs. Do not stop using any medications without first talking to your doctor."),
-    ("lexapro_warfarin", "lexapro", "warfarin", "moderate", "Using escitalopram together with warfarin may increase the risk of bleeding. The interaction may be more likely if you are elderly or have kidney or liver disease. Talk to your doctor if you have any questions or concerns. Your doctor may already be aware of the risks, but has determined that this is the best course of treatment for you and has taken appropriate precautions and is monitoring you closely for any potential complications. You should seek immediate medical attention if you experience any unusual bleeding or bruising, or have other signs and symptoms of bleeding such as dizziness; lightheadedness; red or black, tarry stools; coughing up or vomiting fresh or dried blood that looks like coffee grounds; severe headache; and weakness. It is important to tell your doctor about all other medications you use, including vitamins and herbs. Do not stop using any medications without first talking to your doctor.")
-    ("benadryl_lorazepam", "benadr")
+    ("lexapro_warfarin", "lexapro", "warfarin", "moderate", "Using escitalopram together with warfarin may increase the risk of bleeding. The interaction may be more likely if you are elderly or have kidney or liver disease. Talk to your doctor if you have any questions or concerns. Your doctor may already be aware of the risks, but has determined that this is the best course of treatment for you and has taken appropriate precautions and is monitoring you closely for any potential complications. You should seek immediate medical attention if you experience any unusual bleeding or bruising, or have other signs and symptoms of bleeding such as dizziness; lightheadedness; red or black, tarry stools; coughing up or vomiting fresh or dried blood that looks like coffee grounds; severe headache; and weakness. It is important to tell your doctor about all other medications you use, including vitamins and herbs. Do not stop using any medications without first talking to your doctor."),
+    ("benadryl_lorazepam", "benadryl", "lorazepam", "moderate", "Using LORazepam together with diphenhydrAMINE may increase side effects such as dizziness, drowsiness, confusion, and difficulty concentrating. Some people, especially the elderly, may also experience impairment in thinking, judgment, and motor coordination. You should avoid or limit the use of alcohol while being treated with these medications. Also avoid activities requiring mental alertness such as driving or operating hazardous machinery until you know how the medications affect you. Talk to your doctor if you have any questions or concerns. It is important to tell your doctor about all other medications you use, including vitamins and herbs. Do not stop using any medications without first talking to your doctor."),
+    ("lorazepam_lexapro", "lorazepam", "lexapro", "minor", "Using LORazepam together with escitalopram may increase side effects such as dizziness, drowsiness, confusion, and difficulty concentrating. Some people, especially the elderly, may also experience impairment in thinking, judgment, and motor coordination. You should avoid or limit the use of alcohol while being treated with these medications. Also avoid activities requiring mental alertness such as driving or operating hazardous machinery until you know how the medications affect you. Talk to your doctor if you have any questions or concerns. It is important to tell your doctor about all other medications you use, including vitamins and herbs. Do not stop using any medications without first talking to your doctor."),
+    ("lorazepam_zoloft", "lorazepam", "zoloft", "moderate", "Using LORazepam together with sertraline may increase side effects such as dizziness, drowsiness, confusion, and difficulty concentrating. Some people, especially the elderly, may also experience impairment in thinking, judgment, and motor coordination. You should avoid or limit the use of alcohol while being treated with these medications. Also avoid activities requiring mental alertness such as driving or operating hazardous machinery until you know how the medications affect you. Talk to your doctor if you have any questions or concerns. It is important to tell your doctor about all other medications you use, including vitamins and herbs. Do not stop using any medications without first talking to your doctor.")
 ]
 
 rows = []

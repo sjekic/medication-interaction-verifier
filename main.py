@@ -9,13 +9,14 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://127.0.0.1:5500",
-        "http://localhost:5500"
+        "http://localhost:5500" 
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+#above I added CORS to allow requests from localhost as I had problems testing it without it
 
 DB_PATH = "app.db"
 HISTORY_PATH = Path(__file__).resolve().parents[1] / "data" / "history.json"
@@ -86,6 +87,10 @@ def rule_exists_for_pair(a: str, b: str) -> bool:
         cur.execute("SELECT 1 FROM rules WHERE a=? AND b=?", (a, b))
         return cur.fetchone() is not None
 
+#The post /check endpoint checks if there is an interaction between two drugs
+# if it doesn't find any interaction it tells it to the user and explains how to add a new interaction
+# but if it finds it, it logs it in the history json file and returns the severity and description to the user
+
 @app.post("/check", response_model=CheckResp)
 def check_interaction(req: CheckReq):
     a, b = normalize_pair(req.drug_a, req.drug_b)
@@ -117,11 +122,15 @@ def check_interaction(req: CheckReq):
     append_history(a, b, True, severity)
     return CheckResp(found=True, severity=severity, description=description)
 
+#the get /history endpoint checks if a history file exists, if yes it reads it and if not creates an empty one
+
 @app.get("/history")
 def get_history(limit: int = 50):
     ensure_history_file()
     data = json.loads(HISTORY_PATH.read_text(encoding="utf-8"))
     return data[-limit:] if limit > 0 else data
+
+#get /rules lists all the rules in the database but we can also call it with an id to get one specific rule from the database
 
 @app.get("/rules", response_model=list[RuleOut])
 def list_rules():
@@ -140,6 +149,8 @@ def get_rule(rule_id: str):
     if not r:
         raise HTTPException(404, "Rule not found")
     return RuleOut(id=r[0], a=r[1], b=r[2], severity=r[3], description=r[4])
+
+#app.post creates a new rule but before that normalizes the pair and if it exists already yields a 409 error
 
 @app.post("/rules")
 def create_rule(rule: RuleIn):
@@ -164,6 +175,8 @@ def create_rule(rule: RuleIn):
             raise HTTPException(409, f"Conflict: {e}")
     return {"ok": True, "id": rule_id}
 
+#app.put updates a rule based on its id and if it is not found it yiekds a 404 error
+
 @app.put("/rules/{rule_id}")
 def update_rule(rule_id: str, severity: str, description: str):
     if severity not in {"contraindicated", "major", "moderate", "minor"}:
@@ -176,6 +189,8 @@ def update_rule(rule_id: str, severity: str, description: str):
     if not changed:
         raise HTTPException(404, "Rule not found")
     return {"ok": True}
+
+#app.delete deletes a rule based on its id and if it cannot delete it because it doesn't exist it yields a 404 error
 
 @app.delete("/rules/{rule_id}")
 def delete_rule(rule_id: str):
