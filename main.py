@@ -3,8 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from pathlib import Path
 import sqlite3, json, time
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI(title="Drug Interaction Verifier")
+Instrumentator().instrument(app).expose(app)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -202,3 +204,17 @@ def delete_rule(rule_id: str):
     if not changed:
         raise HTTPException(404, "Rule not found")
     return {"ok": True}
+
+@app.get("/health")
+def health():
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute("SELECT 1")
+        db_status = "ok"
+    except Exception as e:
+        db_status = "error"
+    return {
+        "status" : "ok",
+        "db": db_status,
+        "version": "1.0.0"
+    }
