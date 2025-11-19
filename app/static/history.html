@@ -35,7 +35,7 @@ nav{ position:fixed;top:12px;left:50%;transform:translateX(-50%);display:flex;ga
   </main>
 
 <script>
-const API_BASE = "http://localhost:8000";
+const API_BASE = window.location.origin;
 const API_HISTORY = API_BASE + "/history";
 
 async function loadHistory(){
