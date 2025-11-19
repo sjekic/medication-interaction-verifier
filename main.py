@@ -22,6 +22,7 @@ app.add_middleware(
 
 DB_PATH = "app.db"
 HISTORY_PATH = Path(__file__).resolve().parents[1] / "data" / "history.json"
+VALID_SEVERITIES = {"contraindicated", "major", "moderate", "minor"}
 
 
 # The following part of the code defines a class called CheckReq which is a subclass of BaseModel which comes from python's
@@ -181,7 +182,7 @@ def create_rule(rule: RuleIn):
 
 @app.put("/rules/{rule_id}")
 def update_rule(rule_id: str, severity: str, description: str):
-    if severity not in {"contraindicated", "major", "moderate", "minor"}:
+    if severity not in VALID_SEVERITIES:
         raise HTTPException(400, "Invalid severity")
     with sqlite3.connect(DB_PATH) as conn:
         cur = conn.cursor()
