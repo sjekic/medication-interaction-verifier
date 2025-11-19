@@ -4,9 +4,21 @@ from pydantic import BaseModel, Field
 from pathlib import Path
 import sqlite3, json, time
 from prometheus_fastapi_instrumentator import Instrumentator
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from pathlib import Path
+
 
 app = FastAPI(title="Drug Interaction Verifier")
 Instrumentator().instrument(app).expose(app)
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+def read_index():
+    index_path = Path("app/static/index.html")
+    return index_path.read_text(encoding="utf-8")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
