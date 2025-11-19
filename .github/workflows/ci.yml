@@ -31,7 +31,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest --cov=. --cov-report=term-missing --cov-fail-under=70
+          pytest tests --cov=. --cov-report=term-missing --cov-fail-under=70
 
   docker-build:
     name: Build Docker image (main only)
