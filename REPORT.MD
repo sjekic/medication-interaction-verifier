@@ -53,4 +53,7 @@ To support observability and runtime diagnostics, the app exposes both a /health
 
 ![Prometheus metrics endpoint](docs/images/prometheus-metrics.png)
 
+### DevOps Benefits
+Although this is a small project, devops practice are extremely beneficial. Not only is the app now easily accessible from any device, including mobile phones, but also ensures it runs on any device when ran locally, due to the Docker containerization. I can also continuously monitor if everything is well and the metrics. These practices are important for any project, but especially in the healthtech industry where everything needs to be very reliable.
+
 
